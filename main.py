@@ -1,37 +1,21 @@
+# main.py
+
 from flask import Flask, jsonify
-import requests
-import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from run_api import Crypto  # Import the Crypto model
+from dotenv import load_dotenv
+import os
+from run_api import Crypto  # Import Crypto model (fixed)
+from utils import get_crypto_data  # Import from utils
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 
-# Fetch API key and URL from environment variables
-COINMARKETCAP_API_KEY = os.getenv('COINMARKETCAP_API_KEY')
-COINMARKETCAP_API_URL = os.getenv('COINMARKETCAP_API_URL')
-
 # Database connection
 engine = create_engine("sqlite:///crypto_data.db")
 Session = sessionmaker(bind=engine)
-
-def get_crypto_data():
-    """
-    Fetch cryptocurrency data from CoinMarketCap API.
-    """
-    headers = {
-        'X-CMC_PRO_API_KEY': COINMARKETCAP_API_KEY,
-        'Accept': 'application/json'
-    }
-    response = requests.get(COINMARKETCAP_API_URL, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
 
 @app.route('/crypto')
 def crypto_prices():
