@@ -1,6 +1,7 @@
 flask~=3.1.0
 requests~=2.32.3
 gunicorn
+schedule
 
 python-dotenv~=1.0.1
 django-scheduler~=0.10.1
