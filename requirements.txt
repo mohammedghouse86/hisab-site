@@ -1,3 +1,5 @@
-flask
-requests
+flask~=3.1.0
+requests~=2.32.3
 gunicorn
+
+python-dotenv~=1.0.1
