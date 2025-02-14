@@ -59,5 +59,14 @@ def get_stored_data():
     return jsonify(data_list)
 
 
+@app.route('/debug')
+def debug():
+    try:
+        import schedule
+        return jsonify({"message": "Schedule is installed", "file": str(schedule.__file__)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
