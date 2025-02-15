@@ -5,7 +5,7 @@ import schedule
 from utils import get_crypto_data  # Import from utils, not main
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import declarative_base, sessionmaker
-
+scheduler = schedule.Scheduler()
 # Create database connection
 engine = create_engine("sqlite:///crypto_data.db")
 
@@ -19,6 +19,7 @@ class Crypto(Base):
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     volume_change_24h = Column(Float, nullable=False)
+
 
 # Create the table in the database
 Base.metadata.create_all(engine)
@@ -48,12 +49,13 @@ def fetch_and_store_data():
     else:
         print("Failed to fetch data from CoinMarketCap")
 
+
 # Schedule the function to run every day
-schedule.every().day.do(fetch_and_store_data)
+scheduler.every().day.do(fetch_and_store_data)
 
 # Keep the script running
 if __name__ == "__main__":
     print("Scheduler started. Waiting for the next run...")
     while True:
-        schedule.run_pending()
+        scheduler.run_pending()
         time.sleep(1)  # Wait for 1 second before checking the schedule again
