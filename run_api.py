@@ -1,16 +1,15 @@
-# run_api.py
-
 import time
-import schedule
+import threading
 from utils import get_crypto_data  # Import from utils, not main
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import declarative_base, sessionmaker
-scheduler = schedule.Scheduler()
+
 # Create database connection
 engine = create_engine("sqlite:///crypto_data.db")
 
 # Define the database model
 Base = declarative_base()
+
 
 class Crypto(Base):
     __tablename__ = "crypto_prices"
@@ -26,6 +25,7 @@ Base.metadata.create_all(engine)
 
 # Create a session maker
 Session = sessionmaker(bind=engine)
+
 
 def fetch_and_store_data():
     """
@@ -50,12 +50,21 @@ def fetch_and_store_data():
         print("Failed to fetch data from CoinMarketCap")
 
 
-# Schedule the function to run every day
-scheduler.every().day.do(fetch_and_store_data)
-
-# Keep the script running
-if __name__ == "__main__":
-    print("Scheduler started. Waiting for the next run...")
+def run_scheduler():
+    """
+    Runs fetch_and_store_data() once every 24 hours (86400 seconds).
+    """
     while True:
-        scheduler.run_pending()
-        time.sleep(1)  # Wait for 1 second before checking the schedule again
+        fetch_and_store_data()
+        print("Sleeping for 24 hours...")
+        time.sleep(86400)  # 24 hours
+
+# Run the scheduler in a separate thread
+if __name__ == "__main__":
+    print("Scheduler started. Fetching crypto data every 24 hours...")
+    scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
+    scheduler_thread.start()
+
+    # Keep the script running
+    while True:
+        time.sleep(1)
