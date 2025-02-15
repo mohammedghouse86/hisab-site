@@ -16,7 +16,7 @@ class Crypto(Base):
     __tablename__ = "crypto_prices"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
+    token_name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     volume_change_24h = Column(Float, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)  # Stores UTC time when data is added
@@ -40,7 +40,7 @@ def fetch_and_store_data():
         session = Session()  # Start database session
         for coin in data['data']:
             crypto_entry = Crypto(
-                name=coin['name'],
+                token_name=coin['name'],
                 price=coin['quote']['USD']['price'],
                 volume_change_24h=coin['quote']['USD']['volume_change_24h'],
                 timestamp=datetime.utcnow()  # Store the current UTC timestamp

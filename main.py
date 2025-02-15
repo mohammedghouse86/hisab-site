@@ -27,7 +27,7 @@ def crypto_prices():
         result = []
         for coin in data['data']:
             coin_info = {
-                'name': coin['name'],
+                'token_name': coin['name'],
                 'price': coin['quote']['USD']['price'],
                 'volume_change_24h': coin['quote']['USD']['volume_change_24h']
             }
@@ -51,9 +51,10 @@ def get_stored_data():
     data_list = []
     for entry in results:
         data_list.append({
-            'name': entry.name,
+            'token_name': entry.token_name,
             'price': entry.price,
-            'volume_change_24h': entry.volume_change_24h
+            'volume_change_24h': entry.volume_change_24h,
+            'timestamp': entry.timestamp
         })
 
     return jsonify(data_list)
