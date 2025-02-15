@@ -1,7 +1,8 @@
 import time
 import threading
+from datetime import datetime
 from utils import get_crypto_data  # Import from utils, not main
-from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Create database connection
@@ -18,6 +19,7 @@ class Crypto(Base):
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     volume_change_24h = Column(Float, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)  # Stores UTC time when data is added
 
 
 # Create the table in the database
@@ -40,12 +42,13 @@ def fetch_and_store_data():
             crypto_entry = Crypto(
                 name=coin['name'],
                 price=coin['quote']['USD']['price'],
-                volume_change_24h=coin['quote']['USD']['volume_change_24h']
+                volume_change_24h=coin['quote']['USD']['volume_change_24h'],
+                timestamp=datetime.utcnow()  # Store the current UTC timestamp
             )
             session.add(crypto_entry)  # Add new record
         session.commit()  # Save changes to database
         session.close()  # Close session
-        print("Data stored successfully!")
+        print(f"Data stored successfully at {datetime.utcnow()} UTC")
     else:
         print("Failed to fetch data from CoinMarketCap")
 
@@ -58,6 +61,7 @@ def run_scheduler():
         fetch_and_store_data()
         print("Sleeping for 24 hours...")
         time.sleep(86400)  # 24 hours
+
 
 # Run the scheduler in a separate thread
 if __name__ == "__main__":
